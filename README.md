@@ -7,6 +7,20 @@
 
 *ColorConfusionTool* is a Python-based research tool designed to analyze, simulate, and generate color palettes that present specific perceptual challenges for individuals with Color Vision Deficiencies (CVD). Grounded in the LMS color space transformations proposed by Brettel et al. (1997) and Machado et al. (2009), this tool calculates perceptual divergence using the CIE 2000 ($\Delta E_{00}$) metric. It serves as a utility for game designers to create accessible yet challenging mechanics based on biological vision constraints.
 
+## ✨ Latest Updates
+
+**Enhanced Interface & Educational Features:**
+- 🎨 **Modern UI Design:** Custom CSS styling with improved visual hierarchy and color-coded sections
+- 📚 **Scientific Sidebar:** Comprehensive explanations of CVD types, LMS color space, CIEDE2000 metrics, and confusion line theory
+- 🎓 **Four Interactive Demonstrations:**
+  - CIE 1931 diagram with confusion lines and copunctal points
+  - Side-by-side CVD type comparison
+  - Interactive confusion line generation with validation
+  - Custom pair analysis with automatic insights
+- 🔬 **Enhanced Terminology:** Proper scientific notation (ΔE₀₀), detailed explanations, and reference citations throughout
+- 📊 **Improved Visualizations:** Interactive Plotly charts with hover information and detailed legends
+- 💡 **Educational Context:** Each feature includes purpose, methodology, and practical applications
+
 ## Methodology
 
 The tool operates on two primary algorithms:
@@ -39,16 +53,62 @@ The simulation engine utilizes the `colour-science` library to perform accurate 
     streamlit run app.py
     ```
 
-## Usage
+## Features
 
-### Convergence Search
-Use this module to find pairs of colors that look different to a trichromat (normal vision) but identical to a protanope, deuteranope, or tritanope. These pairs are candidates for "hidden information" mechanics.
+### 🏠 Introduction Tab
+Comprehensive overview of the tool, its scientific foundations, and practical applications in game design and accessibility research.
 
-### Divergence Search
-Use this module to find colors that change drastically depending on the observer's vision. These are useful for "asymmetric information" mechanics.
+### 🔍 Convergence Search
+Find pairs of colors that appear distinct to trichromats (normal vision) but become perceptually indistinguishable to dichromats (protanopia, deuteranopia, or tritanopia). These pairs are ideal for "hidden information" mechanics in games.
 
-### Demonstrations
-The "Demonstrations" tab provides an interactive visualization of the CIE 1931 Chromaticity Diagram, plotting the spectral locus, the original color, and the confusion line associated with the selected deficiency. This serves as a visual validation of the confusion phenomenon.
+**Key Parameters:**
+- ΔE₀₀ threshold in normal vision (minimum distance)
+- ΔE₀₀ threshold in simulated CVD (maximum distance for confusion)
+- Target CVD types for convergence
+
+### 📊 Divergence Search
+Identify individual colors that undergo maximum perceptual shifts across different vision types. These colors are perfect for "asymmetric information" mechanics where players see different cues.
+
+**Key Parameters:**
+- Minimum divergence ΔE₀₀ between vision types
+- Search pool size (curated + random colors)
+
+### ⚙️ Palette Optimizer
+Intelligent iterative search that automatically balances the discovery of both convergent pairs and divergent colors, creating comprehensive palettes for complex game mechanics.
+
+**Features:**
+- Real-time progress tracking
+- Balanced distribution across CVD types
+- Configurable convergence and divergence thresholds
+
+### ⭐ Favorites
+Save and export interesting color pairs and individual colors for later use. Export to JSON for integration with game engines or design tools.
+
+### 🎓 Interactive Demonstrations
+Four comprehensive educational modules:
+
+1. **CIE 1931 Chromaticity Diagram with Confusion Lines**
+   - Visualize the spectral locus and confusion lines
+   - See copunctal points for each CVD type
+   - Interactive color selection and analysis
+
+2. **CVD Type Comparison**
+   - View all three confusion lines simultaneously
+   - Compare how different CVD types affect the same color
+   - Understand the geometric relationships between deficiencies
+
+3. **Interactive Confusion Simulation**
+   - Generate multiple colors along a confusion line
+   - Validate theoretical predictions with ΔE₀₀ calculations
+   - See how colors converge in CVD simulation
+
+4. **Custom Pair Analysis**
+   - Analyze any two colors manually
+   - Get automatic insights and recommendations
+   - Save interesting pairs to favorites
+
+### 📋 Analysis Logs
+Load and filter previous analysis sessions with advanced filtering options.
 
 ## References
 
