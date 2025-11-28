@@ -2,6 +2,8 @@
 
 import streamlit as st
 import cvd_simulation as cl
+import citation_manager as cm
+import puzzle_architect as pa
 import glob
 import json
 import logging
@@ -14,6 +16,7 @@ import numpy as np
 # ... (Configuração inicial e funções display_... e color_box sem alterações) ...
 st.set_page_config(layout="wide")
 st.title("Ferramenta Avançada de Análise de Cores")
+cm.render_citation_tooltip("hofmeyr_gap", label="Modelo: Information-Gap Task")
 
 def color_box(hex_code, label=""):
     return f"""
@@ -173,8 +176,8 @@ def plot_chromaticity_diagram_with_confusion(original_hex, deficiency_type):
 
 
 # --- ABAS DE NAVEGAÇÃO ---
-tab_conv, tab_div, tab_opt, tab_fav, tab_logs, tab_demo = st.tabs([
-    "Busca por Convergência", "Busca por Divergência", "Otimizador de Paleta", "Favoritos", "Logs", "🎓 Demonstrations"
+tab_conv, tab_div, tab_opt, tab_puzzle, tab_fav, tab_logs, tab_demo = st.tabs([
+    "Busca por Convergência", "Busca por Divergência", "Otimizador de Paleta", "Puzzle Architect", "Favoritos", "Logs", "🎓 Demonstrations"
 ])
 
 # ==============================================================================
@@ -237,6 +240,7 @@ with tab_div:
 with tab_opt:
     st.header("Otimizador de Paleta de Cores Desafiadoras")
     st.info("Busca iterativa por uma quantidade desejada de cores/pares que são 'desafiadores' para pelo menos dois tipos de visão.")
+    cm.render_citation_tooltip("maeda_constraints", label="Formalização de Regras")
 
     with st.form("opt_form"):
         target_count = st.number_input("Meta de desafios a encontrar", 1, 100, 10)
@@ -274,6 +278,59 @@ with tab_opt:
                 display_pair_analysis(res, show_favorite_button=True)
             else:
                 display_single_color_analysis(res, show_favorite_button=True)
+
+# ==============================================================================
+# ABA PUZZLE ARCHITECT
+# ==============================================================================
+with tab_puzzle:
+    st.header("Puzzle Architect")
+    st.info("Valide se um par de cores cria um 'Information Gap' eficaz para um puzzle cooperativo.")
+    cm.render_citation_tooltip("hofmeyr_gap", label="Modelo: Information-Gap Task")
+
+    with st.form("puzzle_validator_form"):
+        c1 = st.color_picker("Cor 1", "#FF0000")
+        c2 = st.color_picker("Cor 2", "#00FF00")
+        deficiency = st.selectbox("Tipo de Daltonismo Alvo", ['protanopia', 'deuteranopia', 'tritanopia'])
+        submitted_val = st.form_submit_button("Calcular/Validar Puzzle")
+
+    if submitted_val:
+        analysis = cl.analyze_color_pair(c1, c2)
+        validation = pa.validate_puzzle_candidate(analysis, deficiency)
+        
+        st.subheader("Relatório de Validação")
+        
+        # Metrics
+        c_metrics = st.columns(3)
+        c_metrics[0].metric("Distância Real (ΔE)", f"{analysis['real']['dE']:.2f}")
+        c_metrics[1].metric("Distância Percebida (ΔE)", f"{analysis[deficiency]['dE']:.2f}")
+        c_metrics[2].metric("Equivocação Visual (Bits)", f"{validation['equivocation']:.2f}", help="Incerteza medida em bits (Shannon).")
+        
+        # Citation for Shannon
+        cm.render_citation_tooltip("shannon_equivocation", label="Fundamentação: Equivocação")
+        
+        # Result
+        if validation['status'] == "APROVADO":
+            st.success(f"Resultado: {validation['status']}")
+            st.markdown(f"**Motivo:** {validation['reason']}")
+            st.markdown(cm.get_citation_block("harris_coupling"))
+            
+            st.markdown("---")
+            st.markdown("**Análise de Interdependência:**")
+            st.write("A alta equivocação sugere que os jogadores precisarão cooperar.")
+            cm.render_citation_tooltip("vona_interdependence", label="Interdependência Bidirecional")
+            
+        else:
+            st.error(f"Resultado: {validation['status']}")
+            st.markdown(f"**Motivo:** {validation['reason']}")
+            
+        st.markdown("---")
+        st.markdown("**Contexto Qualitativo:**")
+        cm.render_citation_tooltip("albert_repair", label="Processo de Reparo Conversacional")
+        
+        # Visualização
+        st.divider()
+        st.write("#### Visualização do Par")
+        display_pair_analysis(analysis)
 
 # ==============================================================================
 # ABA FAVORITOS E LOGS (sem alterações)
@@ -334,3 +391,5 @@ with tab_demo:
             st.plotly_chart(fig, use_container_width=True)
         except Exception as e:
             st.error(f"Error generating plot: {e}")
+
+cm.render_academic_footer()
